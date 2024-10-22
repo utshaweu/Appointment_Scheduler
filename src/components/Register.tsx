@@ -58,7 +58,7 @@ const Register: React.FC = () => {
       <div className="row w-100">
         <div className="col-md-6 offset-md-3">
           <div className="card p-4 shadow-sm">
-            <h2 className="text-center text-primary">Appointment Scheduler Register</h2>
+            <h2 className="text-center text-primary">Appointment Scheduler</h2>
             {error && <p className="alert alert-danger">{error}</p>}
             <form onSubmit={handleSubmit}>
               <div className="mb-3">

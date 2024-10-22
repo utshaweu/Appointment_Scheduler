@@ -64,7 +64,7 @@ const Login: React.FC = () => {
         <div className="col-md-6 offset-md-3">
           <div className="card p-4 shadow-sm">
             <h2 className="text-center text-primary">
-              Appointment Scheduler Login
+              Appointment Scheduler
             </h2>
             {error && <p className="alert alert-danger">{error}</p>}
 
