@@ -43,7 +43,7 @@ const UserList: React.FC<UserListProps> = ({ onUserSelect }) => {
     };
 
     fetchUsers();
-  }, []);
+  }, [currentUser?.uid]);
 
   // Filter users based on search term
   useEffect(() => {
