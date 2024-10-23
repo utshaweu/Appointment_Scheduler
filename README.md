@@ -14,7 +14,7 @@ This project is a simple Appointment Scheduler built with React (TypeScript), Fi
 
 Follow these steps to set up the project locally.
 
-1. Clone the repository
+1. Clone the repository <br/>
    git clone https://github.com/your-username/appointment-scheduler.git <br/>
    cd appointment-scheduler
 
