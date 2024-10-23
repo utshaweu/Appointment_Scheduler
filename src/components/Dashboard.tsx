@@ -5,6 +5,7 @@ import { auth } from "../firebase/firebaseConfig";
 import { useNavigate } from "react-router-dom";
 import UserList from "./UserList";
 import AppointmentForm from "./AppointmentForm";
+import AppointmentList from "./AppointmentList";
 
 interface SelectedUser {
   id: string;
@@ -43,7 +44,7 @@ const Dashboard: React.FC = () => {
   };
 
   return (
-    <div className="container d-flex justify-content-center align-items-center vh-100">
+    <div className="container d-flex justify-content-center align-items-center vh-100 dashboard">
       <div className="row w-100">
         <div className="col-md-6 offset-md-3">
           <div className="card p-4 shadow-sm">
@@ -59,14 +60,17 @@ const Dashboard: React.FC = () => {
                 <hr />
                 {!selectedUser ? (
                   <div>
-                    <h3 className="text-center h6">Search and Select a User to Schedule an Appointment</h3>
+                    <h3 className="text-center h6">
+                      Search and Select a User to Schedule an Appointment
+                    </h3>
                     {/* Render UserList component */}
                     <UserList onUserSelect={handleUserSelect} />
                   </div>
                 ) : (
                   <div>
                     <h3 className="text-center h6">
-                      Schedule an Appointment with <b>{selectedUser?.username}</b>
+                      Schedule an Appointment with{" "}
+                      <b>{selectedUser?.username}</b>
                     </h3>
                     {/* Render AppointmentForm component */}
                     <AppointmentForm
@@ -76,12 +80,19 @@ const Dashboard: React.FC = () => {
                   </div>
                 )}
 
-                <button
-                  className="btn btn-danger w-100 mt-4"
-                  onClick={handleLogout}
-                >
-                  Logout
-                </button>
+                <div className="mt-5">
+                  <h3 className="text-center h6">Your Appointments</h3>
+                  <AppointmentList />
+                </div>
+
+                <div style={{ position: "sticky", bottom: 0 }}>
+                  <button
+                    className="btn btn-danger w-100 mt-4"
+                    onClick={handleLogout}
+                  >
+                    Logout
+                  </button>
+                </div>
               </>
             ) : (
               <p>Loading...</p>

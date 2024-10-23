@@ -51,7 +51,7 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
         createdAt: new Date(),
       });
 
-      navigate("/dashboard");
+      navigate("/dashboard", { state: { appointmentCreated: true } });
       onCancel();
     } catch (error) {
       setError("Failed to schedule an appointment. Please try again.");
