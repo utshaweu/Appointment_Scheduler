@@ -1,46 +1,64 @@
-# Getting Started with Create React App
+# Here’s a README.md file with full instructions for setting up and using the Appointment Scheduler application. This document covers prerequisites, setup steps, and usage details.
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Appointment Scheduler Application
 
-## Available Scripts
+This project is a simple Appointment Scheduler built with React (TypeScript), Firebase (Firestore, Authentication, Storage), and Bootstrap for responsive design. Users can register/login, view/search other users, schedule appointments, and manage appointments (accept, decline, or cancel).
 
-In the project directory, you can run:
+### Features
 
-### `npm start`
+1.  User Authentication: Registration and login using Firebase Authentication.
+2.  User Interaction: View and search other users, schedule appointments with other users.
+3.  Appointment Management: View, search, and filter appointments. Accept, decline, or cancel appointments.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+### Setup and Installation
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+Follow these steps to set up the project locally.
 
-### `npm test`
+1. Clone the repository
+   git clone https://github.com/your-username/appointment-scheduler.git
+   cd appointment-scheduler
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+2. Install dependencies
+   Install all the project dependencies using npm:
+   npm install
 
-### `npm run build`
+3. Start the development server
+   npm start
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+The project will be compiled and served at http://localhost:3000.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### How to Use the Application
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+1. User Registration & Login
+<ul>
+    <li>On the homepage, users can register a new account using an email and password.</li>
+    <li>After registration, users can log in with the same credentials.</li>
+</ul>
 
-### `npm run eject`
+2. Viewing Users
+<ul>
+    <li>After logging in, navigate to the Dashboard page (/dashboard).</li>
+    <li>You can view the list of all users and search for specific users using the search bar.</li>
+</ul>
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+3. Scheduling Appointments
+<ul>
+    <li>When you click the user list then you have a scheduled appointment form.</li>
+    <li>Fill in the details for the appointment (title, description, date, and time).</li>
+    <li>After submitting the form, the appointment will be saved in the system.</li>
+</ul>
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+4. Managing Appointments
+<ul>
+    <li>Navigate to the Dashboard page (/dashboard) to view all your appointments.</li>
+    <li>The appointments are categorized into Upcoming Appointments and Past Appointments.</li>
+    <li>You can filter appointments by status (pending, accepted, declined) and search for specific appointments using the search bar.</li>
+    <li>For pending appointments, you can accept or decline the appointment directly from the list.</li>
+    <li>You can also cancel appointments before they are scheduled.</li>
+</ul>
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+### Demo username and password
 
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+-   **Username:** utshaw
+-   **Password:** 123456

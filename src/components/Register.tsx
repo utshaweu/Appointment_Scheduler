@@ -1,44 +1,68 @@
-import React, { useState, useEffect } from 'react';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { auth, db } from '../firebase/firebaseConfig';
-import { doc, setDoc } from 'firebase/firestore';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { auth, db } from "../firebase/firebaseConfig";
+import {
+  collection,
+  doc,
+  getDocs,
+  query,
+  setDoc,
+  where,
+} from "firebase/firestore";
+import { useNavigate } from "react-router-dom";
 
 const Register: React.FC = () => {
-  const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+    setError("");
 
     if (!username || !email || !password) {
-      setError('All fields are required.');
+      setError("All fields are required.");
       return;
     }
 
     setLoading(true);
 
     try {
+      // Check if username already exists
+      const q = query(
+        collection(db, "users"),
+        where("username", "==", username)
+      );
+      const querySnapshot = await getDocs(q);
+
+      if (!querySnapshot.empty) {
+        setError("Username already exists. Please choose a different one.");
+        setLoading(false);
+        return;
+      }
+
       // Create user with email and password
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
       const user = userCredential?.user;
-      console.log(user, "user");
+      // console.log(user, "user");
 
       // Store additional user info (username) in Firestore
-      await setDoc(doc(db, 'users', user?.uid), {
+      await setDoc(doc(db, "users", user?.uid), {
         username: username,
         email: email,
         createdAt: new Date(),
       });
 
-      navigate('/login'); // Redirect to login after successful registration
+      navigate("/login");
     } catch (err) {
-      setError('Failed to create an account. Please try again.');
+      setError("Failed to create an account. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -47,7 +71,7 @@ const Register: React.FC = () => {
   useEffect(() => {
     if (error) {
       const timer = setTimeout(() => {
-        setError('');
+        setError("");
       }, 2000);
       return () => clearTimeout(timer);
     }
@@ -62,7 +86,9 @@ const Register: React.FC = () => {
             {error && <p className="alert alert-danger">{error}</p>}
             <form onSubmit={handleSubmit}>
               <div className="mb-3">
-                <label htmlFor="username" className="form-label">Username</label>
+                <label htmlFor="username" className="form-label">
+                  Username
+                </label>
                 <input
                   type="text"
                   id="username"
@@ -73,7 +99,9 @@ const Register: React.FC = () => {
                 />
               </div>
               <div className="mb-3">
-                <label htmlFor="email" className="form-label">Email</label>
+                <label htmlFor="email" className="form-label">
+                  Email
+                </label>
                 <input
                   type="email"
                   id="email"
@@ -84,7 +112,9 @@ const Register: React.FC = () => {
                 />
               </div>
               <div className="mb-3">
-                <label htmlFor="password" className="form-label">Password</label>
+                <label htmlFor="password" className="form-label">
+                  Password
+                </label>
                 <input
                   type="password"
                   id="password"
@@ -94,23 +124,31 @@ const Register: React.FC = () => {
                   disabled={loading}
                 />
               </div>
-              <button type="submit" className="btn btn-primary w-100" disabled={loading}>
+              <button
+                type="submit"
+                className="btn btn-primary w-100"
+                disabled={loading}
+              >
                 {loading ? (
-                  <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                  <span
+                    className="spinner-border spinner-border-sm"
+                    role="status"
+                    aria-hidden="true"
+                  ></span>
                 ) : (
-                  'Register'
+                  "Register"
                 )}
               </button>
             </form>
 
             <div className="text-center mt-3">
               <p>
-                Already have an account?{' '}
+                Already have an account?{" "}
                 <span
                   role="button"
                   className="text-primary"
-                  onClick={() => navigate('/login')}
-                  style={{ cursor: 'pointer' }}
+                  onClick={() => navigate("/login")}
+                  style={{ cursor: "pointer" }}
                 >
                   Login
                 </span>

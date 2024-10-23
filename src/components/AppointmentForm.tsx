@@ -6,7 +6,7 @@ import { db } from "../firebase/firebaseConfig";
 
 interface AppointmentFormProps {
   withUserId: string;
-  onCancel: () => void; 
+  onCancel: () => void;
 }
 
 const AppointmentForm: React.FC<AppointmentFormProps> = ({
@@ -49,6 +49,7 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
         userId: currentUser?.uid, // The user scheduling the appointment
         withUserId, // The user with whom the appointment is scheduled
         createdAt: new Date(),
+        status: "pending", // Pending status by default
       });
 
       navigate("/dashboard", { state: { appointmentCreated: true } });
@@ -115,7 +116,12 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
           />
         </div>
         <div className="text-center">
-          <button type="submit" className="btn btn-primary" disabled={loading} style={{ fontSize: "14px" }}>
+          <button
+            type="submit"
+            className="btn btn-primary"
+            disabled={loading}
+            style={{ fontSize: "14px" }}
+          >
             {loading ? (
               <span
                 className="spinner-border spinner-border-sm"

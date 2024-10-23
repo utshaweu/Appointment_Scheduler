@@ -7,6 +7,7 @@ import {
   orderBy,
   doc,
   getDoc,
+  updateDoc,
 } from "firebase/firestore";
 import { db } from "../firebase/firebaseConfig";
 import { useAuth } from "../context/AuthContext";
@@ -21,6 +22,8 @@ interface Appointment {
   userId: string;
   withUserId: string;
   withUsername?: string;
+  schedulerUsername?: string;
+  status?: "pending" | "accepted" | "declined" | "cancelled";
 }
 
 const AppointmentList: React.FC = () => {
@@ -29,49 +32,76 @@ const AppointmentList: React.FC = () => {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [filter, setFilter] = useState<"all" | "upcoming" | "past">("all");
+  const [loadingId, setLoadingId] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchAppointments = async () => {
-      if (currentUser) {
-        const appointmentsRef = collection(db, "appointments");
-        const q = query(
-          appointmentsRef,
-          where("userId", "==", currentUser?.uid), // Fetch current user's appointments
-          orderBy("date", "asc"),
-          orderBy("time", "asc")
-        );
-        const querySnapshot = await getDocs(q);
-        const fetchedAppointments = querySnapshot.docs.map((doc) => ({
-          id: doc?.id,
-          ...doc?.data(),
-        })) as Appointment[];
+  // Function to fetch appointments
+  const fetchAppointments = async () => {
+    if (currentUser) {
+      const appointmentsRef = collection(db, "appointments");
 
-        // Fetch the other user's (withUserId) name for each appointment
-        const updatedAppointments = await Promise.all(
-          fetchedAppointments.map(async (appointment) => {
-            if (appointment?.withUserId) {
-              const userDoc = await getDoc(
-                doc(db, "users", appointment?.withUserId)
-              );
-              const withUsername = userDoc.exists()
-                ? userDoc?.data()?.username
-                : "Unknown User";
-              return { ...appointment, withUsername };
+      const q = query(
+        appointmentsRef,
+        where("userId", "==", currentUser?.uid),
+        orderBy("date", "asc"),
+        orderBy("time", "asc")
+      );
+
+      const q2 = query(
+        appointmentsRef,
+        where("withUserId", "==", currentUser?.uid),
+        orderBy("date", "asc"),
+        orderBy("time", "asc")
+      );
+
+      const schedulerSnapshot = await getDocs(q);
+      const holderSnapshot = await getDocs(q2);
+
+      const schedulerAppointments = schedulerSnapshot?.docs.map((doc) => ({
+        id: doc?.id,
+        ...doc?.data(),
+      })) as Appointment[];
+
+      const holderAppointments = holderSnapshot?.docs.map((doc) => ({
+        id: doc?.id,
+        ...doc?.data(),
+      })) as Appointment[];
+
+      const allAppointments = [...schedulerAppointments, ...holderAppointments];
+
+      const updatedAppointments = await Promise.all(
+        allAppointments.map(async (appointment) => {
+          let withUsername = "Unknown User";
+          let schedulerUsername = "Unknown Scheduler";
+
+          if (appointment?.withUserId) {
+            const userDoc = await getDoc(
+              doc(db, "users", appointment?.withUserId)
+            );
+            if (userDoc.exists()) {
+              withUsername = userDoc?.data()?.username;
             }
-            return appointment;
-          })
-        );
+          }
 
-        setAppointments(updatedAppointments);
-      }
-    };
+          if (appointment?.userId) {
+            const schedulerDoc = await getDoc(
+              doc(db, "users", appointment?.userId)
+            );
+            if (schedulerDoc.exists()) {
+              schedulerUsername = schedulerDoc?.data()?.username;
+            }
+          }
 
-    if (location?.state?.appointmentCreated || currentUser) {
-      fetchAppointments();
+          return { ...appointment, withUsername, schedulerUsername };
+        })
+      );
+
+      setAppointments(updatedAppointments);
     }
-  }, [currentUser, location.state?.appointmentCreated]);
+  };
 
-  // Filter logic for upcoming and past appointments
+  const isScheduler = (appointment: Appointment) =>
+    currentUser?.uid === appointment?.userId;
+
   const getFilteredAppointments = (): Appointment[] => {
     const now = new Date();
     return appointments.filter((appointment) => {
@@ -87,7 +117,6 @@ const AppointmentList: React.FC = () => {
     });
   };
 
-  // Search logic
   const getSearchedAppointments = (): Appointment[] => {
     const filtered = getFilteredAppointments();
     if (!searchTerm) return filtered;
@@ -101,6 +130,56 @@ const AppointmentList: React.FC = () => {
   };
 
   const filteredAppointments = getSearchedAppointments();
+
+  // Cancel appointment function
+  const cancelAppointment = async (appointmentId: string) => {
+    setLoadingId(appointmentId);
+    try {
+      const appointmentRef = doc(db, "appointments", appointmentId);
+      await updateDoc(appointmentRef, {
+        status: "cancelled",
+      });
+      console.log("Appointment cancelled:", appointmentId);
+
+      // Fetch updated appointments after successful cancellation
+      await fetchAppointments();
+    } catch (error) {
+      console.error("Error cancelling appointment:", error);
+    } finally {
+      setLoadingId(null);
+    }
+  };
+
+  // Respond to appointment function
+  const respondToAppointment = async (
+    appointmentId: string,
+    status: "accepted" | "declined"
+  ) => {
+    setLoadingId(appointmentId);
+    try {
+      const appointmentRef = doc(db, "appointments", appointmentId);
+      await updateDoc(appointmentRef, {
+        status,
+      });
+      console.log(
+        `Appointment ${appointmentId} responded with status: ${status}`
+      );
+
+      // Fetch updated appointments after successful response
+      await fetchAppointments();
+    } catch (error) {
+      console.error("Error responding to appointment:", error);
+    } finally {
+      setLoadingId(null);
+    }
+  };
+
+  useEffect(() => {
+    if (location?.state?.appointmentCreated || currentUser) {
+      fetchAppointments();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentUser, location.state?.appointmentCreated]);
 
   return (
     <div className="container">
@@ -155,9 +234,95 @@ const AppointmentList: React.FC = () => {
               <br />
               <span>Time: {appointment?.time}</span>
               <br />
-              <span style={{ fontWeight: 500 }}>
-                <i>With: {appointment?.withUsername}</i>
-              </span>
+
+              {isScheduler(appointment) ? (
+                <p className="text-muted">
+                  You scheduled this appointment with{" "}
+                  <strong>{appointment?.withUsername}</strong>.
+                </p>
+              ) : (
+                <p className="text-muted">
+                  <strong>{appointment?.schedulerUsername}</strong> scheduled
+                  this appointment with you.
+                </p>
+              )}
+
+              {isScheduler(appointment) &&
+                new Date(`${appointment?.date}T${appointment?.time}`) >
+                  new Date() &&
+                appointment?.status !== "cancelled" && (
+                  <button
+                    className="btn btn-danger mt-2"
+                    onClick={() => cancelAppointment(appointment?.id)}
+                    disabled={loadingId === appointment?.id}
+                  >
+                    {loadingId === appointment?.id ? (
+                      <span
+                        className="spinner-border spinner-border-sm"
+                        role="status"
+                        aria-hidden="true"
+                      ></span>
+                    ) : (
+                      "Cancel Appointment"
+                    )}
+                  </button>
+                )}
+
+              {!isScheduler(appointment) &&
+                appointment?.status === "pending" && (
+                  <div>
+                    <button
+                      className="btn btn-success mt-2 me-2"
+                      onClick={() =>
+                        respondToAppointment(appointment?.id, "accepted")
+                      }
+                      disabled={loadingId === appointment?.id}
+                    >
+                      {loadingId === appointment?.id ? (
+                        <span
+                          className="spinner-border spinner-border-sm"
+                          role="status"
+                          aria-hidden="true"
+                        ></span>
+                      ) : (
+                        "Accept"
+                      )}
+                    </button>
+                    <button
+                      className="btn btn-danger mt-2"
+                      onClick={() =>
+                        respondToAppointment(appointment?.id, "declined")
+                      }
+                      disabled={loadingId === appointment?.id}
+                    >
+                      {loadingId === appointment?.id ? (
+                        <span
+                          className="spinner-border spinner-border-sm"
+                          role="status"
+                          aria-hidden="true"
+                        ></span>
+                      ) : (
+                        "Decline"
+                      )}
+                    </button>
+                  </div>
+                )}
+
+              {appointment?.status === "accepted" && (
+                <p className="text-success">
+                  <b>Accepted</b>
+                </p>
+              )}
+              {appointment?.status === "declined" && (
+                <p className="text-warning">
+                  <b>Declined</b>
+                </p>
+              )}
+              {appointment?.status === "cancelled" && (
+                <p className="text-danger">
+                  <b>Cancelled</b>
+                </p>
+              )}
             </li>
           ))
         ) : (
