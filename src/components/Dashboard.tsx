@@ -46,7 +46,7 @@ const Dashboard: React.FC = () => {
   return (
     <div className="container d-flex justify-content-center align-items-center vh-100 dashboard">
       <div className="row w-100">
-        <div className="col-md-6 offset-md-3">
+        <div className="col-md-8 offset-md-2">
           <div className="card p-4 shadow-sm">
             <h2 className="text-center text-primary">Dashboard</h2>
             {currentUser ? (

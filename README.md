@@ -2,13 +2,14 @@
 
 ## Appointment Scheduler Application
 
-This project is a simple Appointment Scheduler built with React (TypeScript), Firebase (Firestore, Authentication, Storage), and Bootstrap for responsive design. Users can register/login, view/search other users, schedule appointments, and manage appointments (accept, decline, or cancel).
+This project is a simple Appointment Scheduler built with React (TypeScript), Firebase (Firestore, Authentication, Storage), and Bootstrap for responsive design. Users can register/login, view/search other users, schedule appointments, and manage appointments (accept, decline, or cancel). Appointments can optionally include an audio message recorded by the scheduler.
 
 ### Features
 
 1.  User Authentication: Registration and login using Firebase Authentication.
 2.  User Interaction: View and search other users, schedule appointments with other users.
 3.  Appointment Management: View, search, and filter appointments. Accept, decline, or cancel appointments.
+4.  Audio Message: Optionally add an audio message to an appointment (file upload).
 
 ### Setup and Installation
 
@@ -45,6 +46,7 @@ The project will be compiled and served at http://localhost:3000.
 <ul>
     <li>When you click the user list then you have a scheduled appointment form.</li>
     <li>Fill in the details for the appointment (title, description, date, and time).</li>
+    <li>Optionally, you can upload an audio message that will be attached to the appointment.</li>
     <li>After submitting the form, the appointment will be saved in the system.</li>
 </ul>
 

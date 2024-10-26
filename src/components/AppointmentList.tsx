@@ -23,6 +23,7 @@ interface Appointment {
   withUserId: string;
   withUsername?: string;
   schedulerUsername?: string;
+  audioUrl: string;
   status?: "pending" | "accepted" | "declined" | "cancelled";
 }
 
@@ -235,6 +236,15 @@ const AppointmentList: React.FC = () => {
               <span>Time: {appointment?.time}</span>
               <br />
 
+              {appointment?.audioUrl && (
+                <div className="audio-card">
+                  <audio controls>
+                    <source src={appointment?.audioUrl} type="audio/mpeg" />
+                    Your browser does not support the audio element.
+                  </audio>
+                </div>
+              )}
+
               {isScheduler(appointment) ? (
                 <p className="text-muted">
                   You scheduled this appointment with{" "}
@@ -255,6 +265,7 @@ const AppointmentList: React.FC = () => {
                     className="btn btn-danger mt-2"
                     onClick={() => cancelAppointment(appointment?.id)}
                     disabled={loadingId === appointment?.id}
+                    style={{ fontSize: "14px" }}
                   >
                     {loadingId === appointment?.id ? (
                       <span
@@ -277,6 +288,7 @@ const AppointmentList: React.FC = () => {
                         respondToAppointment(appointment?.id, "accepted")
                       }
                       disabled={loadingId === appointment?.id}
+                      style={{ fontSize: "14px" }}
                     >
                       {loadingId === appointment?.id ? (
                         <span
@@ -294,6 +306,7 @@ const AppointmentList: React.FC = () => {
                         respondToAppointment(appointment?.id, "declined")
                       }
                       disabled={loadingId === appointment?.id}
+                      style={{ fontSize: "14px" }}
                     >
                       {loadingId === appointment?.id ? (
                         <span
@@ -308,13 +321,19 @@ const AppointmentList: React.FC = () => {
                   </div>
                 )}
 
+              {isScheduler(appointment) &&
+                appointment?.status === "pending" && (
+                  <p className="text-warning mt-2">
+                    <b>Pending</b>
+                  </p>
+                )}
               {appointment?.status === "accepted" && (
                 <p className="text-success">
                   <b>Accepted</b>
                 </p>
               )}
               {appointment?.status === "declined" && (
-                <p className="text-warning">
+                <p className="text-info">
                   <b>Declined</b>
                 </p>
               )}
