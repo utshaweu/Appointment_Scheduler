@@ -44,59 +44,61 @@ const Dashboard: React.FC = () => {
   };
 
   return (
-    <div className="container d-flex justify-content-center align-items-center vh-100 dashboard">
+    <div className="container">
       <div className="row w-100">
         <div className="col-md-8 offset-md-2">
-          <div className="card p-4 shadow-sm">
-            <h2 className="text-center text-primary">Dashboard</h2>
-            {currentUser ? (
-              <>
-                <div className="text-center">
-                  <p>
-                    Welcome, <strong>{username}</strong>!
-                  </p>
-                  <p>Email: {currentUser.email}</p>
-                </div>
-                <hr />
-                {!selectedUser ? (
-                  <div>
-                    <h3 className="text-center h6">
-                      Search and Select a User to Schedule an Appointment
-                    </h3>
-                    {/* Render UserList component */}
-                    <UserList onUserSelect={handleUserSelect} />
+          <div className="d-flex justify-content-center align-items-center dashboard">
+            <div className="card p-md-4 p-sm-2 shadow-sm">
+              <h2 className="text-center text-primary">Dashboard</h2>
+              {currentUser ? (
+                <>
+                  <div className="text-center">
+                    <p>
+                      Welcome, <strong>{username}</strong>!
+                    </p>
+                    <p>Email: {currentUser?.email}</p>
                   </div>
-                ) : (
-                  <div>
-                    <h3 className="text-center h6">
-                      Schedule an Appointment with{" "}
-                      <b>{selectedUser?.username}</b>
-                    </h3>
-                    {/* Render AppointmentForm component */}
-                    <AppointmentForm
-                      withUserId={selectedUser?.id}
-                      onCancel={handleBackToUserList}
-                    />
+                  <hr />
+                  {!selectedUser ? (
+                    <div>
+                      <h3 className="text-center h6">
+                        Search and Select a User to Schedule an Appointment
+                      </h3>
+                      {/* Render UserList component */}
+                      <UserList onUserSelect={handleUserSelect} />
+                    </div>
+                  ) : (
+                    <div>
+                      <h3 className="text-center h6">
+                        Schedule an Appointment with{" "}
+                        <b>{selectedUser?.username}</b>
+                      </h3>
+                      {/* Render AppointmentForm component */}
+                      <AppointmentForm
+                        withUserId={selectedUser?.id}
+                        onCancel={handleBackToUserList}
+                      />
+                    </div>
+                  )}
+
+                  <div className="mt-5">
+                    <h3 className="text-center h6">Your Appointments</h3>
+                    <AppointmentList />
                   </div>
-                )}
 
-                <div className="mt-5">
-                  <h3 className="text-center h6">Your Appointments</h3>
-                  <AppointmentList />
-                </div>
-
-                <div style={{ position: "sticky", bottom: 0 }}>
-                  <button
-                    className="btn btn-danger w-100 mt-4"
-                    onClick={handleLogout}
-                  >
-                    Logout
-                  </button>
-                </div>
-              </>
-            ) : (
-              <p>Loading...</p>
-            )}
+                  <div style={{ position: "sticky", bottom: 0 }}>
+                    <button
+                      className="btn btn-danger w-100 mt-4"
+                      onClick={handleLogout}
+                    >
+                      Logout
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <p>Loading...</p>
+              )}
+            </div>
           </div>
         </div>
       </div>

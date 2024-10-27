@@ -1,9 +1,12 @@
 body {
   font-family: "Poppins", sans-serif;
 }
-
+.dashboard {
+  min-height: calc(100vh - 10px);
+}
 .dashboard .card {
-  height: 750px;
+  height: 680px;
+  width: 100%;
   overflow-y: auto;
 }
 
