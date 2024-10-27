@@ -79,6 +79,7 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
         // 1MB size limit
         setError("File size must be 1MB or less.");
         setAudioFile(null);
+        e.target.value = "";
       } else {
         setAudioFile(file);
       }

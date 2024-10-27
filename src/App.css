@@ -3,6 +3,7 @@ body {
 }
 .dashboard {
   min-height: calc(100vh - 10px);
+  width: 100%;
 }
 .dashboard .card {
   height: 680px;
@@ -56,6 +57,9 @@ body {
 
 /* Media query for mobile screens */
 @media (max-width: 600px) {
+  .dashboard h2 {
+    margin-top: 10px;
+  }
   .audio-card {
     padding: 0.75rem;
     border-radius: 10px;

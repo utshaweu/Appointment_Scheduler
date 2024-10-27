@@ -45,8 +45,8 @@ const Dashboard: React.FC = () => {
 
   return (
     <div className="container">
-      <div className="row w-100">
-        <div className="col-md-8 offset-md-2">
+      <div className="row">
+        <div className="col-md-8 mx-auto">
           <div className="d-flex justify-content-center align-items-center dashboard">
             <div className="card p-md-4 p-sm-2 shadow-sm">
               <h2 className="text-center text-primary">Dashboard</h2>
